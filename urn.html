@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Urn Pricing Tool</title>
+  <!-- Including prop-types.min.js first -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
+  <!-- Including React and ReactDOM -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <!-- Including Babel for JSX transformation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <!-- Including Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    // Defining the initial urn data
+    const initialUrns = [
+      { material: "Cast Bronze", name: "Sarcophagus", wsPrice: 2300, currentMultiplier: 1.8239, currentPrice: 4195 },
+      { material: "Cast Bronze", name: "Morocco Book Companion", wsPrice: 1275, currentMultiplier: 1.8431, currentPrice: 2350 },
+      { material: "Cast Bronze", name: "Fidelis/Polished Top Companion", wsPrice: 1095, currentMultiplier: 1.8219, currentPrice: 1995 },
+      { material: "Cast Bronze", name: "Morocco Book", wsPrice: 1025, currentMultiplier: 1.8487, currentPrice: 1895 },
+      { material: "Cast Bronze", name: "Classic Book", wsPrice: 1025, currentMultiplier: 1.8487, currentPrice: 1895 },
+      { material: "Cast Bronze", name: "Luxor", wsPrice: 995, currentMultiplier: 1.804, currentPrice: 1795 },
+      { material: "Cast Bronze", name: "Ivy Book", wsPrice: 1025, currentMultiplier: 1.7512, currentPrice: 1795 },
+      { material: "Cast Bronze", name: "Radiance", wsPrice: 825, currentMultiplier: 1.8787, currentPrice: 1550 },
+      { material: "Cast Bronze", name: "Star Companion", wsPrice: 850, currentMultiplier: 1.7588, currentPrice: 1495 },
+      { material: "Cast Bronze", name: "Thira", wsPrice: 765, currentMultiplier: 1.8954, currentPrice: 1450 },
+      { material: "Cast Bronze", name: "Tree of Life", wsPrice: 775, currentMultiplier: 1.8709, currentPrice: 1450 },
+      { material: "Cast Bronze", name: "Harmonia/Patriot", wsPrice: 675, currentMultiplier: 1.8518, currentPrice: 1250 },
+      { material: "Cast Bronze", name: "Cylinder", wsPrice: 620, currentMultiplier: 1.8548, currentPrice: 1150 },
+      { material: "Cast Bronze", name: "Guardian", wsPrice: 535, currentMultiplier: 1.8598, currentPrice: 995 },
+      { material: "Cast Bronze", name: "Fidelity Roma", wsPrice: 420, currentMultiplier: 1.8928, currentPrice: 795 },
+      { material: "Porcelain", name: "Limoges Porcelain", wsPrice: 1025, currentMultiplier: 1.9463, currentPrice: 1995 },
+      { material: "Porcelain", name: "Anthemis Montreal", wsPrice: 950, currentMultiplier: 1.7263, currentPrice: 1640 },
+      { material: "Porcelain", name: "Prince Blue Montreal", wsPrice: 670, currentMultiplier: 1.8955, currentPrice: 1270 },
+      { material: "Porcelain", name: "Garden Montreal", wsPrice: 645, currentMultiplier: 1.9069, currentPrice: 1230 },
+      { material: "Porcelain", name: "Peonies Montreal", wsPrice: 645, currentMultiplier: 1.9069, currentPrice: 1230 },
+      { material: "Porcelain", name: "Aviary Montreal", wsPrice: 625, currentMultiplier: 1.904, currentPrice: 1190 },
+      { material: "Porcelain", name: "Christ/Mosaic Cross Montreal", wsPrice: 625, currentMultiplier: 1.904, currentPrice: 1190 },
+      { material: "Porcelain", name: "Our Lady of Guadalupe", wsPrice: 625, currentMultiplier: 1.904, currentPrice: 1190 },
+      { material: "Porcelain", name: "Kintsugi Montreal", wsPrice: 625, currentMultiplier: 1.904, currentPrice: 1190 },
+      { material: "Porcelain", name: "A La Reine Montreal", wsPrice: 645, currentMultiplier: 1.8139, currentPrice: 1170 },
+      { material: "Porcelain", name: "Mary/Thin Cross Montreal", wsPrice: 605, currentMultiplier: 1.9008, currentPrice: 1150 },
+      { material: "Porcelain", name: "Cherry Blossom Montreal", wsPrice: 625, currentMultiplier: 1.808, currentPrice: 1130 },
+      { material: "Porcelain", name: "Garden Toscan", wsPrice: 580, currentMultiplier: 1.8965, currentPrice: 1100 },
+      { material: "Porcelain", name: "Prince Blue Toscan", wsPrice: 580, currentMultiplier: 1.8965, currentPrice: 1100 },
+      { material: "Porcelain", name: "Meadow", wsPrice: 205, currentMultiplier: 1.9268, currentPrice: 395 },
+      { material: "Porcelain", name: "Scroll", wsPrice: 205, currentMultiplier: 1.9268, currentPrice: 395 },
+      { material: "Porcelain", name: "Metro", wsPrice: 210, currentMultiplier: 1.8809, currentPrice: 395 },
+      { material: "Porcelain", name: "Metamorphosis", wsPrice: 210, currentMultiplier: 1.8809, currentPrice: 395 },
+      { material: "Porcelain", name: "Meritage", wsPrice: 210, currentMultiplier: 1.8809, currentPrice: 395 },
+      { material: "Porcelain", name: "Cassidy", wsPrice: 210, currentMultiplier: 1.8809, currentPrice: 395 },
+      { material: "Crystal", name: "Fleurs Bleu", wsPrice: 1050, currentMultiplier: 1.7095, currentPrice: 1795 },
+      { material: "Crystal", name: "Golden Tree of Life", wsPrice: 850, currentMultiplier: 1.7588, currentPrice: 1495 },
+      { material: "Crystal", name: "Golden Tulip", wsPrice: 525, currentMultiplier: 1.3238, currentPrice: 695 },
+      { material: "Sheet Bronze", name: "Flag Panel Bronze", wsPrice: 645, currentMultiplier: 1.8527, currentPrice: 1195 },
+      { material: "Sheet Bronze", name: "Together Companion", wsPrice: 570, currentMultiplier: 1.8421, currentPrice: 1050 },
+      { material: "Sheet Bronze", name: "Interlude", wsPrice: 420, currentMultiplier: 1.8928, currentPrice: 795 },
+      { material: "Sheet Bronze", name: "Solitude", wsPrice: 425, currentMultiplier: 1.8705, currentPrice: 795 },
+      { material: "Sheet Bronze", name: "Bronze Insert", wsPrice: 375, currentMultiplier: 1.8533, currentPrice: 695 },
+      { material: "Sheet Bronze", name: "Prelude", wsPrice: 400, currentMultiplier: 1.7375, currentPrice: 695 },
+      { material: "Sheet Bronze", name: "Classic", wsPrice: 400, currentMultiplier: 1.625, currentPrice: 650 },
+      { material: "Sheet Bronze", name: "Cherub", wsPrice: 140, currentMultiplier: 2.1071, currentPrice: 295 },
+      { material: "Sheet Bronze", name: "Spartan Basic", wsPrice: 102, currentMultiplier: 2.4509, currentPrice: 250 },
+      { material: "Sheet Bronze", name: "Spartan Tall", wsPrice: 102, currentMultiplier: 2.4509, currentPrice: 250 },
+      { material: "Solid Marble", name: "Dynasty Jade", wsPrice: 510, currentMultiplier: 1.8627, currentPrice: 950 },
+      { material: "Solid Marble", name: "Glade Mist", wsPrice: 315, currentMultiplier: 1.746, currentPrice: 550 },
+      { material: "Solid Marble", name: "Forest Haze", wsPrice: 315, currentMultiplier: 1.746, currentPrice: 550 },
+      { material: "Solid Marble", name: "Tiger Eye Round", wsPrice: 315, currentMultiplier: 1.746, currentPrice: 550 },
+      { material: "Solid Marble", name: "Mallorca", wsPrice: 300, currentMultiplier: 1.8333, currentPrice: 550 },
+      { material: "Solid Marble", name: "Java Black", wsPrice: 300, currentMultiplier: 1.8333, currentPrice: 550 },
+      { material: "Pewter", name: "Norfolk Pewter", wsPrice: 470, currentMultiplier: 1.9042, currentPrice: 895 },
+      { material: "Glass", name: "Amphora Violet", wsPrice: 400, currentMultiplier: 1.7375, currentPrice: 695 },
+      { material: "Glass", name: "Moonlit Violet", wsPrice: 400, currentMultiplier: 1.7375, currentPrice: 695 },
+      { material: "Glass", name: "Amphora Aqua", wsPrice: 0, currentMultiplier: 0, currentPrice: 595 },
+      { material: "Glass", name: "Moonlit Cobalt", wsPrice: 330, currentMultiplier: 1.803, currentPrice: 595 },
+      { material: "Glass", name: "Peacock Memory Chest", wsPrice: 225, currentMultiplier: 1.7555, currentPrice: 395 },
+      { material: "Glass", name: "Seaside Memory Chest", wsPrice: 170, currentMultiplier: 2.0588, currentPrice: 350 },
+      { material: "Glass", name: "Evergreen Memory Chest", wsPrice: 170, currentMultiplier: 2.0588, currentPrice: 350 },
+      { material: "Cloisonne", name: "Opal", wsPrice: 335, currentMultiplier: 1.9402, currentPrice: 650 },
+      { material: "Cloisonne", name: "Rose", wsPrice: 335, currentMultiplier: 1.9402, currentPrice: 650 },
+      { material: "Cloisonne", name: "Butterfly Garden", wsPrice: 380, currentMultiplier: 1.7105, currentPrice: 650 },
+      { material: "Cloisonne", name: "Blue Sapphire Cloisonne", wsPrice: 380, currentMultiplier: 1.7105, currentPrice: 650 },
+      { material: "Cloisonne", name: "Essence Opal", wsPrice: 335, currentMultiplier: 1.9402, currentPrice: 650 },
+      { material: "Cloisonne", name: "Etienne Butterfly", wsPrice: 335, currentMultiplier: 1.9402, currentPrice: 650 },
+      { material: "Cloisonne", name: "Autumn Leaves", wsPrice: 335, currentMultiplier: 1.9402, currentPrice: 650 },
+      { material: "Cloisonne", name: "Essence Rose", wsPrice: 335, currentMultiplier: 1.0447, currentPrice: 350 },
+      { material: "Wood", name: "Modern Chest Companion", wsPrice: 250, currentMultiplier: 2.38, currentPrice: 595 },
+      { material: "Wood", name: "Tribute Mosaic", wsPrice: 240, currentMultiplier: 2.4791, currentPrice: 595 },
+      { material: "Wood", name: "Traditional Mosaic", wsPrice: 240, currentMultiplier: 2.4791, currentPrice: 595 },
+      { material: "Wood", name: "Midtown Clock", wsPrice: 285, currentMultiplier: 2.0877, currentPrice: 595 },
+      { material: "Wood", name: "Akoya", wsPrice: 260, currentMultiplier: 1.9038, currentPrice: 495 },
+      { material: "Wood", name: "Modern Chest Individual", wsPrice: 195, currentMultiplier: 2.1538, currentPrice: 420 },
+      { material: "Wood", name: "Cork Cube", wsPrice: 120, currentMultiplier: 2.0833, currentPrice: 250 },
+      { material: "Wood", name: "Maitland", wsPrice: 55, currentMultiplier: 3.5454, currentPrice: 195 },
+      { material: "Alabaster", name: "Alicante", wsPrice: 330, currentMultiplier: 1.803, currentPrice: 595 },
+      { material: "Alabaster", name: "San Vicente", wsPrice: 330, currentMultiplier: 1.803, currentPrice: 595 },
+      { material: "Biodegradable", name: "BioTree White", wsPrice: 250, currentMultiplier: 2.38, currentPrice: 595 },
+      { material: "Biodegradable", name: "BioTree Green", wsPrice: 250, currentMultiplier: 2.38, currentPrice: 595 },
+      { material: "Biodegradable", name: "Shell Urn Pearl", wsPrice: 210, currentMultiplier: 2.3571, currentPrice: 495 },
+      { material: "Biodegradable", name: "Sand Dollar Urn", wsPrice: 210, currentMultiplier: 2.3571, currentPrice: 495 },
+      { material: "Biodegradable", name: "Oceane Sand", wsPrice: 160, currentMultiplier: 2.6562, currentPrice: 425 },
+      { material: "Biodegradable", name: "Celeste Cobalt", wsPrice: 135, currentMultiplier: 2.1851, currentPrice: 295 },
+      { material: "Biodegradable", name: "Celeste Sage", wsPrice: 135, currentMultiplier: 2.1851, currentPrice: 295 },
+      { material: "Biodegradable", name: "Celeste Dandelion", wsPrice: 135, currentMultiplier: 2.1851, currentPrice: 295 },
+      { material: "Biodegradable", name: "Celeste Ivory", wsPrice: 135, currentMultiplier: 2.1851, currentPrice: 295 },
+      { material: "Biodegradable", name: "Unity Earthurn Floral", wsPrice: 90, currentMultiplier: 2.1666, currentPrice: 195 },
+      { material: "Biodegradable", name: "Aqua Journey Earthurn", wsPrice: 89, currentMultiplier: 2.191, currentPrice: 195 },
+      { material: "Biodegradable", name: "Serene Blue", wsPrice: 75, currentMultiplier: 2, currentPrice: 150 },
+      { material: "Biodegradable", name: "Serene Brown", wsPrice: 75, currentMultiplier: 2, currentPrice: 150 },
+      { material: "Biodegradable", name: "Placidity", wsPrice: 75, currentMultiplier: 2, currentPrice: 150 },
+      { material: "Biodegradable", name: "Mountain View Scattering Tube", wsPrice: 49, currentMultiplier: 2.2448, currentPrice: 110 },
+      { material: "Biodegradable", name: "Ascending Dove Scattering Tube", wsPrice: 49, currentMultiplier: 2.2448, currentPrice: 110 },
+      { material: "Biodegradable", name: "Bluebell Forest Scattering Tube", wsPrice: 49, currentMultiplier: 2.2448, currentPrice: 110 },
+      { material: "Biodegradable", name: "Ocean Sunset Scattering Tube", wsPrice: 49, currentMultiplier: 2.2448, currentPrice: 110 },
+      { material: "Biodegradable", name: "Patriot Scattering Tube", wsPrice: 49, currentMultiplier: 2.2448, currentPrice: 110 },
+      { material: "Biodegradable", name: "Pride Scattering Tube", wsPrice: 49, currentMultiplier: 1.9387, currentPrice: 95 },
+      { material: "Biodegradable", name: "Lighthouse Scattering Tube", wsPrice: 49, currentMultiplier: 1.9387, currentPrice: 95 },
+      { material: "Biodegradable", name: "Lotus Scattering Tube", wsPrice: 49, currentMultiplier: 1.9387, currentPrice: 95 },
+      { material: "Cultured Marble", name: "Black Marble Companion", wsPrice: 304, currentMultiplier: 1.9572, currentPrice: 595 },
+      { material: "Cultured Marble", name: "White Marble Companion", wsPrice: 304, currentMultiplier: 1.9572, currentPrice: 595 },
+      { material: "Cultured Marble", name: "Navy Blue Marble Companion", wsPrice: 304, currentMultiplier: 1.9572, currentPrice: 595 },
+      { material: "Cultured Marble", name: "Wild Rose Marble Companion", wsPrice: 304, currentMultiplier: 1.9572, currentPrice: 595 },
+      { material: "Cultured Marble", name: "Black Marble", wsPrice: 160, currentMultiplier: 2.1875, currentPrice: 350 },
+      { material: "Cultured Marble", name: "White Marble", wsPrice: 160, currentMultiplier: 2.1875, currentPrice: 350 },
+      { material: "Cultured Marble", name: "Green Marble", wsPrice: 160, currentMultiplier: 2.1875, currentPrice: 350 },
+      { material: "Cultured Marble", name: "Navy Blue Marble", wsPrice: 160, currentMultiplier: 2.1875, currentPrice: 350 },
+      { material: "Cultured Marble", name: "Wild Rose Marble", wsPrice: 160, currentMultiplier: 2.1875, currentPrice: 350 },
+      { material: "Cultured Marble", name: "Kenzy Navy", wsPrice: 160, currentMultiplier: 2.1875, currentPrice: 350 },
+      { material: "Cultured Marble", name: "Kenzy Ebony", wsPrice: 160, currentMultiplier: 2.1875, currentPrice: 350 },
+      { material: "Cultured Marble", name: "Kenzy White", wsPrice: 160, currentMultiplier: 2.1875, currentPrice: 350 },
+      { material: "Cultured Marble", name: "Kenzy Syrocco", wsPrice: 160, currentMultiplier: 2.1875, currentPrice: 350 },
+      { material: "Cultured Marble", name: "Kenzy Emerald", wsPrice: 160, currentMultiplier: 2.1875, currentPrice: 350 },
+      { material: "Aluminum", name: "Cirrus Vase White", wsPrice: 285, currentMultiplier: 1.7368, currentPrice: 495 },
+      { material: "Aluminum", name: "Cirrus Vase Blue", wsPrice: 285, currentMultiplier: 1.7368, currentPrice: 495 },
+      { material: "Aluminum", name: "Cortina", wsPrice: 205, currentMultiplier: 2.1951, currentPrice: 450 },
+      { material: "Aluminum", name: "Carinthia", wsPrice: 205, currentMultiplier: 2.1951, currentPrice: 450 },
+      { material: "Aluminum", name: "Kettering", wsPrice: 205, currentMultiplier: 2.1951, currentPrice: 450 },
+      { material: "Aluminum", name: "Patterson", wsPrice: 205, currentMultiplier: 2.1951, currentPrice: 450 },
+      { material: "Aluminum", name: "Heathered Burgundy", wsPrice: 95, currentMultiplier: 2.6315, currentPrice: 250 },
+      { material: "Aluminum", name: "Marbled Indigo", wsPrice: 95, currentMultiplier: 2.6315, currentPrice: 250 },
+      { material: "Aluminum", name: "Bouquet", wsPrice: 95, currentMultiplier: 2.6315, currentPrice: 250 },
+      { material: "Aluminum", name: "Hudson Blue", wsPrice: 87, currentMultiplier: 2.2413, currentPrice: 195 },
+      { material: "Aluminum", name: "Vira Floral", wsPrice: 87, currentMultiplier: 2.2413, currentPrice: 195 },
+      { material: "Aluminum", name: "Tempo Gold", wsPrice: 87, currentMultiplier: 2.2413, currentPrice: 195 },
+      { material: "Brass", name: "Venice", wsPrice: 225, currentMultiplier: 2, currentPrice: 450 },
+      { material: "Brass", name: "Milano Floral", wsPrice: 205, currentMultiplier: 2.1951, currentPrice: 450 },
+      { material: "Brass", name: "Milano Pink", wsPrice: 205, currentMultiplier: 2.1951, currentPrice: 450 },
+      { material: "Brass", name: "Tuscany Blue", wsPrice: 215, currentMultiplier: 2.093, currentPrice: 450 },
+      { material: "Brass", name: "Tuscany Slate", wsPrice: 215, currentMultiplier: 2.093, currentPrice: 450 },
+      { material: "Brass", name: "Athens Brass Sienna Large", wsPrice: 195, currentMultiplier: 2.3076, currentPrice: 450 },
+      { material: "Brass", name: "Athens Pewter Blue Large", wsPrice: 195, currentMultiplier: 2.3076, currentPrice: 450 },
+      { material: "Brass", name: "Arcadia Umber", wsPrice: 205, currentMultiplier: 2.1951, currentPrice: 450 },
+      { material: "Brass", name: "Genoa Brushed Bronze", wsPrice: 205, currentMultiplier: 2.1951, currentPrice: 450 },
+      { material: "Brass", name: "Aria Ascending", wsPrice: 220, currentMultiplier: 2.0454, currentPrice: 450 },
+      { material: "Brass", name: "Grecian Crimson", wsPrice: 205, currentMultiplier: 2.1951, currentPrice: 450 },
+      { material: "Brass", name: "Antique Silver Oak", wsPrice: 210, currentMultiplier: 2.1428, currentPrice: 450 },
+      { material: "Brass", name: "Trinity Moonlight Blue", wsPrice: 210, currentMultiplier: 2.1428, currentPrice: 450 },
+      { material: "Brass", name: "Dutcher", wsPrice: 205, currentMultiplier: 2.1951, currentPrice: 450 },
+      { material: "Brass", name: "Grace", wsPrice: 245, currentMultiplier: 1.8367, currentPrice: 450 },
+      { material: "Brass", name: "Majesty", wsPrice: 245, currentMultiplier: 1.8367, currentPrice: 450 },
+      { material: "Brass", name: "Onyx Elite", wsPrice: 210, currentMultiplier: 1.8809, currentPrice: 395 },
+      { material: "Brass", name: "Painted Peace Doves", wsPrice: 205, currentMultiplier: 1.9268, currentPrice: 395 },
+      { material: "Brass", name: "Butterfly Embrace", wsPrice: 210, currentMultiplier: 1.8809, currentPrice: 395 },
+      { material: "Brass", name: "In Flight Large", wsPrice: 125, currentMultiplier: 2.8, currentPrice: 350 },
+      { material: "Brass", name: "Midnight Ornate Large", wsPrice: 125, currentMultiplier: 2.8, currentPrice: 350 },
+      { material: "Brass", name: "Brushed Pewter Large", wsPrice: 130, currentMultiplier: 2.6923, currentPrice: 350 },
+      { material: "Brass", name: "Mother of Pearl Large", wsPrice: 130, currentMultiplier: 2.6923, currentPrice: 350 },
+      { material: "Brass", name: "Calcutta", wsPrice: 75, currentMultiplier: 4.6666, currentPrice: 350 },
+      { material: "Brass", name: "Trinitas", wsPrice: 125, currentMultiplier: 2.8, currentPrice: 350 },
+      { material: "Brass", name: "Spectrum", wsPrice: 180, currentMultiplier: 1.9444, currentPrice: 350 },
+      { material: "Brass", name: "Kamari", wsPrice: 180, currentMultiplier: 1.9444, currentPrice: 350 },
+      { material: "Brass", name: "Santorini", wsPrice: 180, currentMultiplier: 1.9444, currentPrice: 350 },
+      { material: "Brass", name: "Flutter Pink", wsPrice: 185, currentMultiplier: 1.8918, currentPrice: 350 },
+      { material: "Brass", name: "Arielle Heart Light Blue", wsPrice: 142, currentMultiplier: 1.7605, currentPrice: 250 },
+      { material: "Brass", name: "Arielle Heart Ivory", wsPrice: 142, currentMultiplier: 1.7605, currentPrice: 250 },
+      { material: "Brass", name: "Athens Brass Sienna Medium", wsPrice: 95, currentMultiplier: 2.0526, currentPrice: 195 },
+      { material: "Brass", name: "Athens Pewter Blue Medium", wsPrice: 95, currentMultiplier: 2.0526, currentPrice: 195 },
+      { material: "Brass", name: "Mother of Pearl Medium", wsPrice: 97, currentMultiplier: 2.0103, currentPrice: 195 },
+      { material: "Brass", name: "Orleans Brown", wsPrice: 92, currentMultiplier: 2.1195, currentPrice: 195 },
+      { material: "Brass", name: "Orleans Blue", wsPrice: 92, currentMultiplier: 2.1195, currentPrice: 195 },
+      { material: "Brass", name: "Flutter Pink Medium", wsPrice: 112, currentMultiplier: 1.741, currentPrice: 195 },
+      { material: "Brass", name: "Joy Medium Blue", wsPrice: 87, currentMultiplier: 2.0114, currentPrice: 175 },
+      { material: "Brass", name: "Joy Medium Pink", wsPrice: 87, currentMultiplier: 2.0114, currentPrice: 175 },
+      { material: "Brass", name: "In Flight Medium", wsPrice: 77, currentMultiplier: 1.948, currentPrice: 150 },
+      { material: "Brass", name: "Midnight Ornate Medium", wsPrice: 77, currentMultiplier: 1.948, currentPrice: 150 },
+      { material: "Brass", name: "Brushed Pewter Medium", wsPrice: 77, currentMultiplier: 1.948, currentPrice: 150 },
+      { material: "Salt", name: "Rock Salt Urn", wsPrice: 195, currentMultiplier: 2.3076, currentPrice: 450 },
+      { material: "Resin", name: "Magnolia Songbirds", wsPrice: 210, currentMultiplier: 2.1428, currentPrice: 450 },
+      { material: "Resin", name: "Waterlily Dragonflies", wsPrice: 210, currentMultiplier: 2.1428, currentPrice: 450 },
+      { material: "Ceramic", name: "Rose Garden", wsPrice: 205, currentMultiplier: 1.9268, currentPrice: 395 },
+      { material: "Ceramic", name: "Spring Rain", wsPrice: 155, currentMultiplier: 2.258, currentPrice: 350 },
+      { material: "Steel", name: "Hamilton", wsPrice: 135, currentMultiplier: 1.8518, currentPrice: 250 },
+      { material: "Steel", name: "Seger", wsPrice: 89, currentMultiplier: 2.191, currentPrice: 195 },
+      { material: "Tin", name: "Tin w/Gunmetal Finish", wsPrice: 58, currentMultiplier: 2.1551, currentPrice: 125 },
+      { material: "Bronze", name: "Rosebud Companion", wsPrice: 1165, currentMultiplier: 1.8841, currentPrice: 2195 },
+      { material: "Bronze", name: "Closed Book", wsPrice: 1155, currentMultiplier: 1.8138, currentPrice: 2095 },
+      { material: "Bronze", name: "Lily Companion", wsPrice: 975, currentMultiplier: 1.841, currentPrice: 1795 },
+      { material: "Bronze", name: "Diamond Companion", wsPrice: 850, currentMultiplier: 1.7058, currentPrice: 1450 },
+      { material: "Bronze", name: "Cube Companion", wsPrice: 850, currentMultiplier: 1.7058, currentPrice: 1450 },
+      { material: "Bronze", name: "Rustic", wsPrice: 775, currentMultiplier: 1.8709, currentPrice: 1450 },
+      { material: "Bronze", name: "Rose", wsPrice: 775, currentMultiplier: 1.8, currentPrice: 1395 },
+      { material: "Bronze", name: "Oceanside", wsPrice: 775, currentMultiplier: 1.8, currentPrice: 1395 },
+      { material: "Bronze", name: "Diamond", wsPrice: 675, currentMultiplier: 1.8518, currentPrice: 1250 },
+      { material: "Bronze", name: "Hope", wsPrice: 675, currentMultiplier: 1.8518, currentPrice: 1250 },
+      { material: "Bronze", name: "Cube", wsPrice: 675, currentMultiplier: 1.7703, currentPrice: 1195 },
+      { material: "Bronze", name: "Puritan", wsPrice: 675, currentMultiplier: 1.7703, currentPrice: 1195 },
+      { material: "Bronze", name: "Fiore", wsPrice: 410, currentMultiplier: 1.939, currentPrice: 795 },
+      { material: "Bronze", name: "Flora", wsPrice: 410, currentMultiplier: 1.939, currentPrice: 795 },
+      { material: "Copper", name: "Emperor", wsPrice: 350, currentMultiplier: 1.9857, currentPrice: 695 },
+      { material: "Stainless Steel", name: "In Peace", wsPrice: 2100, currentMultiplier: 1.6642, currentPrice: 3495 },
+      { material: "Stainless Steel", name: "Flag Panel Stainless Steel", wsPrice: 645, currentMultiplier: 1.8527, currentPrice: 1195 },
+      { material: "Stainless Steel", name: "Lodi Stainless Steel", wsPrice: 550, currentMultiplier: 1.809, currentPrice: 995 },
+      { material: "Stainless Steel", name: "Classic Flag", wsPrice: 205, currentMultiplier: 1.9268, currentPrice: 395 },
+      { material: "Stainless Steel", name: "Seger Bronze", wsPrice: 130, currentMultiplier: 1.923, currentPrice: 250 },
+      { material: "Stainless Steel", name: "Seger Pewter", wsPrice: 130, currentMultiplier: 1.923, currentPrice: 250 },
+      { material: "Stainless Steel", name: "Silver Oval Charm", wsPrice: 54, currentMultiplier: 1.3888, currentPrice: 75 },
+      { material: "Stainless Steel", name: "Gold Oval Charm", wsPrice: 54, currentMultiplier: 1.3888, currentPrice: 75 },
+      { material: "Mahogany", name: "Britain", wsPrice: 640, currentMultiplier: 1.9531, currentPrice: 1250 },
+      { material: "Mahogany", name: "St. Joseph", wsPrice: 330, currentMultiplier: 1.9696, currentPrice: 650 },
+      { material: "Mahogany", name: "Praying Hands", wsPrice: 365, currentMultiplier: 1.6301, currentPrice: 595 },
+      { material: "Walnut", name: "Together Again 3D Companion", wsPrice: 685, currentMultiplier: 1.9708, currentPrice: 1350 },
+      { material: "Walnut", name: "Beach 3D Companion", wsPrice: 685, currentMultiplier: 1.9708, currentPrice: 1350 },
+      { material: "Walnut", name: "Flag Case with Pedestal Urn", wsPrice: 470, currentMultiplier: 1.8085, currentPrice: 850 },
+      { material: "Walnut", name: "Eagle 3D", wsPrice: 425, currentMultiplier: 1.9764, currentPrice: 840 },
+      { material: "Walnut", name: "Hummingbird 3D", wsPrice: 425, currentMultiplier: 1.8705, currentPrice: 795 },
+      { material: "Walnut", name: "Beach 3D", wsPrice: 425, currentMultiplier: 1.8705, currentPrice: 795 },
+      { material: "Walnut", name: "Noble Walnut", wsPrice: 335, currentMultiplier: 1.7761, currentPrice: 595 },
+      { material: "Walnut", name: "Aristocrat Walnut", wsPrice: 280, currentMultiplier: 1.9642, currentPrice: 550 },
+      { material: "Walnut", name: "Avon Walnut", wsPrice: 240, currentMultiplier: 1.875, currentPrice: 450 },
+      { material: "Walnut", name: "Walnut Scattering Urn", wsPrice: 260, currentMultiplier: 1.7307, currentPrice: 450 },
+      { material: "Walnut", name: "Spirit", wsPrice: 170, currentMultiplier: 1.9117, currentPrice: 325 },
+      { material: "Cherry", name: "The Good Life Companion Photo Urn", wsPrice: 610, currentMultiplier: 1.8852, currentPrice: 1150 },
+      { material: "Cherry", name: "Avon Cherry Companion", wsPrice: 435, currentMultiplier: 1.954, currentPrice: 850 },
+      { material: "Cherry", name: "The Best Times Family Tree", wsPrice: 385, currentMultiplier: 1.948, currentPrice: 750 },
+      { material: "Cherry", name: "Military Panel Urn", wsPrice: 325, currentMultiplier: 2, currentPrice: 650 },
+      { material: "Cherry", name: "Everlasting", wsPrice: 330, currentMultiplier: 1.9696, currentPrice: 650 },
+      { material: "Cherry", name: "Expressions Photo Urn", wsPrice: 330, currentMultiplier: 1.803, currentPrice: 595 },
+      { material: "Cherry", name: "Prestwick", wsPrice: 330, currentMultiplier: 1.803, currentPrice: 595 },
+      { material: "Cherry", name: "Noble Cherry", wsPrice: 335, currentMultiplier: 1.7761, currentPrice: 595 },
+      { material: "Cherry", name: "La Cadena Rota Photo", wsPrice: 330, currentMultiplier: 1.803, currentPrice: 595 },
+      { material: "Cherry", name: "Una Rama a Caido", wsPrice: 330, currentMultiplier: 1.803, currentPrice: 595 },
+      { material: "Cherry", name: "Aristocrat Cherry", wsPrice: 280, currentMultiplier: 1.9642, currentPrice: 550 },
+      { material: "Cherry", name: "Revel", wsPrice: 275, currentMultiplier: 2, currentPrice: 550 },
+      { material: "Cherry", name: "Admire (Dad) Photo Urn", wsPrice: 125, currentMultiplier: 4.4, currentPrice: 550 },
+      { material: "Cherry", name: "Our Lady of Guadelupe", wsPrice: 260, currentMultiplier: 1.9038, currentPrice: 495 },
+      { material: "Cherry", name: "Family Tree Scattering Urn", wsPrice: 260, currentMultiplier: 1.7307, currentPrice: 450 },
+      { material: "Cherry", name: "Avon Cherry", wsPrice: 240, currentMultiplier: 1.875, currentPrice: 450 },
+      { material: "Cherry", name: "Amity", wsPrice: 245, currentMultiplier: 1.8367, currentPrice: 450 },
+      { material: "Maple", name: "Always Near Photo Urn", wsPrice: 330, currentMultiplier: 1.803, currentPrice: 595 },
+      { material: "Maple", name: "Aristocrat Black", wsPrice: 280, currentMultiplier: 1.9642, currentPrice: 550 },
+      { material: "Maple", name: "Boynton", wsPrice: 245, currentMultiplier: 2.0204, currentPrice: 495 },
+      { material: "Maple", name: "Brunswick", wsPrice: 245, currentMultiplier: 2.0204, currentPrice: 495 },
+      { material: "Maple", name: "Arcadia Scattering Urn", wsPrice: 260, currentMultiplier: 1.9038, currentPrice: 495 },
+      { material: "Maple", name: "Cascade Scattering Urn", wsPrice: 260, currentMultiplier: 1.9038, currentPrice: 495 },
+      { material: "Oak", name: "Mission Oak", wsPrice: 505, currentMultiplier: 1.9702, currentPrice: 995 },
+      { material: "Oak", name: "Lighthouse 3D", wsPrice: 425, currentMultiplier: 1.8705, currentPrice: 795 },
+      { material: "Oak", name: "Golf 3D", wsPrice: 425, currentMultiplier: 1.8705, currentPrice: 795 },
+      { material: "Oak", name: "Country Lane", wsPrice: 320, currentMultiplier: 1.8593, currentPrice: 595 },
+      { material: "Oak", name: "Noah's Ark", wsPrice: 280, currentMultiplier: 1.7678, currentPrice: 495 },
+      { material: "Oak", name: "Davidson", wsPrice: 255, currentMultiplier: 1.9411, currentPrice: 495 },
+      { material: "Pine", name: "Always At My Side Box Urn", wsPrice: 210, currentMultiplier: 1.8809, currentPrice: 395 },
+      { material: "Pine", name: "Heavenly Hummingbird Box Urn", wsPrice: 210, currentMultiplier: 1.8809, currentPrice: 395 },
+      { material: "Poplar", name: "Corbett Mantle Clock", wsPrice: 535, currentMultiplier: 1.8598, currentPrice: 995 },
+      { material: "Poplar", name: "Magnolia Memory Chest", wsPrice: 350, currentMultiplier: 1.8571, currentPrice: 650 },
+      { material: "Veneer", name: "Memento II", wsPrice: 265, currentMultiplier: 1.8679, currentPrice: 495 },
+      { material: "Veneer", name: "Amherst Walnut Finish", wsPrice: 235, currentMultiplier: 1.9148, currentPrice: 450 },
+      { material: "Veneer", name: "Natural Burl Elm", wsPrice: 140, currentMultiplier: 3.2142, currentPrice: 450 },
+      { material: "Veneer", name: "Dark Burl Elm", wsPrice: 140, currentMultiplier: 3.2142, currentPrice: 450 },
+      { material: "Veneer", name: "Brazilian Rosewood", wsPrice: 240, currentMultiplier: 1.875, currentPrice: 450 },
+      { material: "Veneer", name: "Mahogany", wsPrice: 240, currentMultiplier: 1.875, currentPrice: 450 },
+      { material: "Veneer", name: "Bailey Burlwood", wsPrice: 240, currentMultiplier: 1.875, currentPrice: 450 },
+      { material: "Veneer", name: "Ceylon", wsPrice: 240, currentMultiplier: 1.875, currentPrice: 450 },
+      { material: "Veneer", name: "Renton Mahogany", wsPrice: 195, currentMultiplier: 1.7948, currentPrice: 350 },
+      { material: "Veneer", name: "Spartan Light", wsPrice: 120, currentMultiplier: 2.0833, currentPrice: 250 },
+      { material: "Veneer", name: "Spartan Dark", wsPrice: 120, currentMultiplier: 2.0833, currentPrice: 250 },
+      { material: "Veneer", name: "Standard", wsPrice: 120, currentMultiplier: 2.0833, currentPrice: 250 },
+      { material: "Veneer", name: "Veneer Cross", wsPrice: 135, currentMultiplier: 1.8518, currentPrice: 250 },
+      { material: "Veneer", name: "Paramount Photo Urn", wsPrice: 135, currentMultiplier: 1.8518, currentPrice: 250 },
+      { material: "Veneer", name: "Triumph 4 x 6 Photo Urn", wsPrice: 135, currentMultiplier: 1.8518, currentPrice: 250 },
+      { material: "Veneer", name: "Bamboo Urn", wsPrice: 97, currentMultiplier: 2.0103, currentPrice: 195 },
+      { material: "Veneer", name: "Regal", wsPrice: 87, currentMultiplier: 2.2413, currentPrice: 195 },
+      { material: "Veneer", name: "Simplicity", wsPrice: 87, currentMultiplier: 2.2413, currentPrice: 195 },
+      { material: "Veneer", name: "Cherry Veneer", wsPrice: 70, currentMultiplier: 2.7857, currentPrice: 195 },
+      { material: "Veneer", name: "Natural Veneer", wsPrice: 70, currentMultiplier: 2.7857, currentPrice: 195 },
+      { material: "Composite", name: "Angel Mausoleum Large", wsPrice: 230, currentMultiplier: 1.9565, currentPrice: 450 },
+      { material: "Composite", name: "Angel Alabaster Large", wsPrice: 230, currentMultiplier: 1.9565, currentPrice: 450 },
+      { material: "Composite", name: "Cowboy Large", wsPrice: 210, currentMultiplier: 2.1428, currentPrice: 450 },
+      { material: "Composite", name: "Angel Mausoleum Medium", wsPrice: 125, currentMultiplier: 2, currentPrice: 250 },
+      { material: "Composite", name: "Angel Alabaster Medium", wsPrice: 125, currentMultiplier: 2, currentPrice: 250 }
+    ];
+
+    // Creating the main App component
+    function App() {
+      const [urns, setUrns] = React.useState(initialUrns);
+      const [selectedUrnIndex, setSelectedUrnIndex] = React.useState(null);
+      const [desiredMarginPct, setDesiredMarginPct] = React.useState(60); // Default to target 60% margin
+
+      // Handling margin percentage input change
+      const handleMarginChange = (e) => {
+        const value = parseFloat(e.target.value);
+        if (!isNaN(value) && value >= 0 && value <= 100 && selectedUrnIndex !== null) {
+          setDesiredMarginPct(value);
+          // Updating only the selected urn
+          const updatedUrns = urns.map((urn, index) => {
+            if (index === selectedUrnIndex) {
+              const desiredMarginDecimal = value / 100;
+              // Retail = Wholesale Price / (1 - Desired Margin %)
+              const newRetail = desiredMarginDecimal < 1 ? urn.wsPrice / (1 - desiredMarginDecimal) : urn.wsPrice * 2; // Prevent division by zero
+              const newMargin = newRetail - urn.wsPrice;
+              return { ...urn, currentPrice: Math.round(newRetail * 100) / 100, margin: Math.round(newMargin * 100) / 100 };
+            }
+            return urn;
+          });
+          setUrns(updatedUrns);
+        }
+      };
+
+      // Handling urn selection
+      const handleUrnSelect = (index) => {
+        setSelectedUrnIndex(index);
+        // Reset margin to the selected urn's current margin
+        const selectedUrn = urns[index];
+        const currentMarginPct = ((selectedUrn.currentPrice - selectedUrn.wsPrice) / selectedUrn.currentPrice) * 100;
+        setDesiredMarginPct(currentMarginPct);
+      };
+
+      // Rendering the UI
+      return (
+        <div className="container mx-auto p-6">
+          <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Urn Pricing Tool</h1>
+
+          {/* Current Urn Pricing Table */}
+          <h2 className="text-2xl font-semibold mb-4 text-gray-700">Current Urn Pricing</h2>
+          <div className="overflow-x-auto mb-12">
+            <table className="min-w-full bg-white border rounded-lg shadow-lg">
+              <thead>
+                <tr className="bg-gray-600 text-white">
+                  <th className="p-3 text-left">Material</th>
+                  <th className="p-3 text-left">Urn Name</th>
+                  <th className="p-3 text-right">Wholesale Price ($)</th>
+                  <th className="p-3 text-right">Current Multiplier</th>
+                  <th className="p-3 text-right">Current Price ($)</th>
+                  <th className="p-3 text-right">Current Margin (%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {initialUrns.map((urn, index) => (
+                  <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                    <td className="p-3">{urn.material}</td>
+                    <td className="p-3">{urn.name}</td>
+                    <td className="p-3 text-right">{urn.wsPrice.toFixed(2)}</td>
+                    <td className="p-3 text-right">{urn.currentMultiplier.toFixed(4)}</td>
+                    <td className="p-3 text-right font-semibold">{urn.currentPrice.toFixed(2)}</td>
+                    <td className="p-3 text-right">{((urn.currentPrice - urn.wsPrice) / urn.currentPrice * 100).toFixed(2)}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Interactive Pricing Adjuster Table */}
+          <h2 className="text-2xl font-semibold mb-4 text-gray-700">Adjustable Urn Pricing (Single Urn)</h2>
+          <div className="mb-6 flex justify-center items-center">
+            <label className="mr-4 text-lg text-gray-700 flex items-center">
+              Desired Margin (%):
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="0.1"
+                value={desiredMarginPct}
+                onChange={handleMarginChange}
+                className="ml-2 w-48"
+                disabled={selectedUrnIndex === null}
+              />
+              <span className="ml-2">{desiredMarginPct.toFixed(1)}%</span>
+            </label>
+            <input
+              type="number"
+              value={desiredMarginPct}
+              onChange={handleMarginChange}
+              className="p-2 border rounded w-24"
+              min="0"
+              max="100"
+              step="0.1"
+              disabled={selectedUrnIndex === null}
+            />
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border rounded-lg shadow-lg">
+              <thead>
+                <tr className="bg-blue-600 text-white">
+                  <th className="p-3 text-center">Select</th>
+                  <th className="p-3 text-left">Material</th>
+                  <th className="p-3 text-left">Urn Name</th>
+                  <th className="p-3 text-right">Wholesale Price ($)</th>
+                  <th className="p-3 text-right">Current Multiplier</th>
+                  <th className="p-3 text-right">Current Price ($)</th>
+                  <th className="p-3 text-right">Current Margin (%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {urns.map((urn, index) => (
+                  <tr
+                    key={index}
+                    className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} ${selectedUrnIndex === index ? 'bg-blue-100' : ''}`}
+                  >
+                    <td className="p-3 text-center">
+                      <input
+                        type="radio"
+                        name="urnSelect"
+                        checked={selectedUrnIndex === index}
+                        onChange={() => handleUrnSelect(index)}
+                      />
+                    </td>
+                    <td className="p-3">{urn.material}</td>
+                    <td className="p-3">{urn.name}</td>
+                    <td className="p-3 text-right">{urn.wsPrice.toFixed(2)}</td>
+                    <td className="p-3 text-right">{urn.currentMultiplier.toFixed(4)}</td>
+                    <td className="p-3 text-right font-semibold">{urn.currentPrice.toFixed(2)}</td>
+                    <td className="p-3 text-right">{((urn.currentPrice - urn.wsPrice) / urn.currentPrice * 100).toFixed(2)}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {selectedUrnIndex === null && (
+            <p className="mt-4 text-center text-gray-600">Please select an urn to adjust its margin.</p>
+          )}
+        </div>
+      );
+    }
+
+    // Rendering the App component
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
